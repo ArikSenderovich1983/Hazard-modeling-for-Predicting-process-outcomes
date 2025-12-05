@@ -9,7 +9,7 @@
 
 \begin{document}
 
-\title{Process-Aware Prediction of Treatment-Resistant Depression: Integrating Dynamic Pathway Mining with Survival Modeling for Early Intervention}
+\title{Process-Aware Prediction of Process Outcomes: Integrating Dynamic Pathway Mining with Survival Modeling for Early Intervention}
 \author{Zeinab Soleimani \and Arik Senderovich  \and Mathias Weske}
 %\institute{York University, University of Potsdam, Hasso Plattner Institute, Mount Sinai}
 \maketitle
@@ -52,7 +52,7 @@ The goal is to estimate the hazard $h_i(t)$ or probability $P(\text{TRD onset} |
 Three complementary modeling options are considered.
 
 % ------------------------------------------------------------
-\subsection{Option A: Process-Derived Dynamic Covariates (PM+Survival)}
+\subsection{Process-Derived Dynamic Covariates}
 Process mining metrics (e.g., transition frequencies, pathway entropy, switch rates) are extracted within sliding time windows and used as time-varying covariates in a Cox or joint survival model.
 
 \begin{algorithm}[h]
@@ -70,7 +70,7 @@ Process mining metrics (e.g., transition frequencies, pathway entropy, switch ra
 \end{algorithm}
 
 % ------------------------------------------------------------
-\subsection{Option B: Sequence-to-Outcome Deep Model}
+\subsection{Sequence-to-Outcome Deep Model}
 Learn representations directly from event sequences using RNNs or Transformers that embed both temporal and categorical event data. The model predicts survival probability or discrete-time risk.
 
 \begin{algorithm}[h]
@@ -85,7 +85,7 @@ Learn representations directly from event sequences using RNNs or Transformers t
 \end{algorithm}
 
 % ------------------------------------------------------------
-\subsection{Option C: Hybrid Process Clustering + Survival}
+\subsection{Hybrid Process Clustering + Survival}
 Cluster early trajectories using process-mining similarity (e.g., trace distance, DFG embeddings). Fit separate survival models per cluster to quantify TRD risk conditional on pathway type.
 
 \begin{algorithm}[h]
