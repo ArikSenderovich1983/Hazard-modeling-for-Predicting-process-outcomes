@@ -35,13 +35,13 @@ We propose a unified framework combining process mining with survival analysis t
 % ============================================================
 \section{Background}
 \subsection{Process Mining for Clinical Pathways}
-Briefly review process mining fundamentals: event logs, trace variants, Directly-Follows Graphs (DFGs), abstraction levels, and how these capture patient-level care sequences. Discuss prior descriptive analyses of TRD vs. non-TRD trajectories.
+Briefly review process mining fundamentals: event logs, trace variants, Directly-Follows Graphs (DFGs), abstraction levels, and how these capture patient-level care sequences. Discuss prior descriptive analyses of TRD vs. non-TRD trajectories \cite{vanderAalst2016ProcessMining,Soleimani2025TRD}.
 
 \subsection{Survival and Multi-State Modeling}
-Outline standard and recurrent-event survival models, Cox proportional hazards, and interval censoring. Highlight the challenge that ``non-TRD'' is not absence of resistance but right-censoring.
+Outline standard and recurrent-event survival models, Cox proportional hazards, and interval censoring \cite{Cox1972Regression,Therneau2000Modeling}. Highlight the challenge that ``non-TRD'' is not absence of resistance but right-censoring.
 
 \subsection{Process-Aware Outcome Prediction}
-Position the work within the broader field of process outcome prediction and process-aware survival modeling. Mention applications in manufacturing, patient flow, and business process management.
+Position the work within the broader field of process outcome prediction and process-aware survival modeling \cite{Teinemaa2019OutcomeOriented,vanderAalst2016ProcessMining}. Mention applications in manufacturing, patient flow, and business process management.
 
 % ============================================================
 \section{Proposed Model and Framework}
@@ -130,10 +130,10 @@ Discuss clinical implications for adaptive intervention and potential integratio
 \section{Related Work}
 Cite prior work in:
 \begin{itemize}
-  \item Process mining in psychiatry and pharmacotherapy (Soleimani et al. 2025)
-  \item Process outcome prediction (Teinemaa, Camargo, Van der Aalst)
-  \item Survival analysis for recurrent or multi-state events in healthcare
-  \item Hybrid PM–ML frameworks (Leemans, Mazhar, Weske)
+  \item Process mining in psychiatry and pharmacotherapy (e.g., \cite{Soleimani2025TRD})
+  \item Process outcome prediction (e.g., \cite{Teinemaa2019OutcomeOriented})
+  \item Survival analysis for recurrent or multi-state events in healthcare (e.g., \cite{Cox1972Regression,Therneau2000Modeling})
+  \item Hybrid PM--ML frameworks combining process mining and machine learning \cite{vanderAalst2016ProcessMining}
 \end{itemize}
 
 % ============================================================
