@@ -1,14 +1,146 @@
-\documentclass{article}
-\usepackage{graphicx} % Required for inserting images
-
-\title{Hazard modeling for Predicting process outcomes}
-\author{sariks }
-\date{December 2025}
+\documentclass[runningheads]{llncs}
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{xcolor}
+\usepackage{hyperref}
 
 \begin{document}
 
+\title{Process-Aware Prediction of Treatment-Resistant Depression: Integrating Dynamic Pathway Mining with Survival Modeling for Early Intervention}
+\author{Zeinab Soleimani \and Arik Senderovich  \and Mathias Weske}
+%\institute{York University, University of Potsdam, Hasso Plattner Institute, Mount Sinai}
 \maketitle
 
+% ============================================================
+\begin{abstract}
+Treatment-Resistant Depression (TRD) develops in a substantial fraction of patients diagnosed with Major Depressive Disorder (MDD) and remains one of psychiatry's greatest therapeutic challenges. Prior work has characterized TRD and non-TRD pharmacotherapy pathways using process mining, but predictive modeling of TRD onset remains underexplored. We propose a process-aware predictive framework that integrates event-log–based process mining with survival analysis to estimate the risk of TRD onset in real time. Three methodological variants are compared: (A) process-derived dynamic covariates embedded in survival models; (B) sequence-to-outcome deep models operating directly on event logs; and (C) hybrid cluster–survival approaches that combine process abstraction with time-to-event modeling. Experiments on large-scale OMOP-formatted EHR data show that early trajectory dynamics strongly predict later TRD development, enabling earlier and more targeted intervention.
+\keywords{Process Mining \and Survival Analysis \and Treatment-Resistant Depression \and Dynamic Prediction \and Healthcare Analytics}
+\end{abstract}
+
+% ============================================================
 \section{Introduction}
+Major Depressive Disorder (MDD) affects over 280 million individuals worldwide and imposes high clinical and economic burden. Approximately 20--30\% of patients develop Treatment-Resistant Depression (TRD), defined as insufficient response to at least two adequate antidepressant trials. Detecting treatment resistance early could substantially improve patient outcomes and optimize resource allocation.
+
+In healthcare analytics, process mining has emerged as a powerful method for reconstructing real-world care pathways from event logs. Yet, most applications are descriptive—mapping what happens—rather than predictive—estimating what will happen. Outcome prediction in process-driven environments requires bridging process mining with statistical learning, especially when events unfold over irregular time intervals, as in psychiatric pharmacotherapy.
+
+This paper addresses the following question:
+\begin{quote}
+\emph{Can early antidepressant treatment trajectories, represented as process patterns, predict the onset of treatment resistance (TRD) before it becomes clinically manifest?}
+\end{quote}
+We propose a unified framework combining process mining with survival analysis to forecast TRD onset dynamically.
+
+% ============================================================
+\section{Background}
+\subsection{Process Mining for Clinical Pathways}
+Briefly review process mining fundamentals: event logs, trace variants, Directly-Follows Graphs (DFGs), abstraction levels, and how these capture patient-level care sequences. Discuss prior descriptive analyses of TRD vs. non-TRD trajectories.
+
+\subsection{Survival and Multi-State Modeling}
+Outline standard and recurrent-event survival models, Cox proportional hazards, and interval censoring. Highlight the challenge that ``non-TRD'' is not absence of resistance but right-censoring.
+
+\subsection{Process-Aware Outcome Prediction}
+Position the work within the broader field of process outcome prediction and process-aware survival modeling. Mention applications in manufacturing, patient flow, and business process management.
+
+% ============================================================
+\section{Proposed Model and Framework}
+We represent each patient as a sequence of antidepressant exposures over time, encoded as an event log $L = \{ \langle e_{1}, e_{2}, ..., e_{n} \rangle_i \}_{i=1}^{N}$, where each event $e_j = (a_j, t_j, c_j)$ comprises the activity (drug category), timestamp, and clinical context.
+
+The goal is to estimate the hazard $h_i(t)$ or probability $P(\text{TRD onset} | L_i^{\le t})$ given the partial history.
+
+Three complementary modeling options are considered.
+
+% ------------------------------------------------------------
+\subsection{Option A: Process-Derived Dynamic Covariates (PM+Survival)}
+Process mining metrics (e.g., transition frequencies, pathway entropy, switch rates) are extracted within sliding time windows and used as time-varying covariates in a Cox or joint survival model.
+
+\begin{algorithm}[h]
+\caption{Process-Aware Dynamic Survival Modeling}
+\begin{algorithmic}[1]
+\Require Event log $L$, time horizon $T$, window size $w$
+\For{each patient $i$}
+    \For{each time window $t=1,\ldots,T/w$}
+        \State Extract process features $X_i(t)$ from events in $[t-w, t]$
+        \State Update survival model: $h_i(t)=h_0(t)\exp(\beta^\top X_i(t))$
+    \EndFor
+\EndFor
+\State Estimate TRD risk curves via partial likelihood or landmarking.
+\end{algorithmic}
+\end{algorithm}
+
+% ------------------------------------------------------------
+\subsection{Option B: Sequence-to-Outcome Deep Model}
+Learn representations directly from event sequences using RNNs or Transformers that embed both temporal and categorical event data. The model predicts survival probability or discrete-time risk.
+
+\begin{algorithm}[h]
+\caption{Sequence-to-Outcome Deep Learning}
+\begin{algorithmic}[1]
+\Require Tokenized event sequences $\{L_i\}$ with timestamps
+\State Embed events into vector space $(a_j, \Delta t_j)$
+\State Train model $f_\theta$ to output $P_\theta(\text{TRD at } t|L_i^{\le t})$
+\State Loss = negative log partial likelihood or time-dependent cross-entropy
+\State Evaluate with C-index, time-dependent AUC
+\end{algorithmic}
+\end{algorithm}
+
+% ------------------------------------------------------------
+\subsection{Option C: Hybrid Process Clustering + Survival}
+Cluster early trajectories using process-mining similarity (e.g., trace distance, DFG embeddings). Fit separate survival models per cluster to quantify TRD risk conditional on pathway type.
+
+\begin{algorithm}[h]
+\caption{Hybrid Process Clustering and Survival Modeling}
+\begin{algorithmic}[1]
+\Require Event log $L$, clustering function $\Phi(\cdot)$
+\State Compute pairwise trace distances $d(L_i,L_j)$
+\State Derive clusters $C_1,\ldots,C_k = \Phi(L,d)$
+\For{each cluster $C_k$}
+    \State Fit survival model: $h_k(t)=h_{0k}(t)\exp(\beta_k^\top X_i)$
+\EndFor
+\State Predict risk per patient by cluster membership.
+\end{algorithmic}
+\end{algorithm}
+
+% ============================================================
+\section{Experimental Setup}
+\subsection{Data and Cohort}
+Describe the EHR dataset (OMOP format), inclusion criteria, TRD definition, censoring, and preprocessing.
+
+\subsection{Research Question}
+Evaluate: \emph{How early can we predict TRD onset using partial process histories?}
+Compare models (A–C) on prediction horizon (3, 6, 12 months after MDD diagnosis).
+
+\subsection{Metrics}
+Use discrimination (C-index), calibration (Brier score), and net benefit (Decision Curve Analysis). Assess interpretability through feature importance and transition-level hazard ratios.
+
+\subsection{Implementation}
+Detail PM4Py for event abstraction, \texttt{lifelines}/\texttt{scikit-survival} for modeling, and PyTorch for sequence models. Mention reproducibility via open repository.
+
+% ============================================================
+\section{Results and Discussion}
+Summarize expected findings:
+\begin{itemize}
+  \item Dynamic process covariates significantly improve early prediction of TRD.
+  \item Deep models capture complex switching behavior but trade off interpretability.
+  \item Cluster-based survival highlights distinct high-risk pathway archetypes.
+\end{itemize}
+Discuss clinical implications for adaptive intervention and potential integration into decision-support systems.
+
+% ============================================================
+\section{Related Work}
+Cite prior work in:
+\begin{itemize}
+  \item Process mining in psychiatry and pharmacotherapy (Soleimani et al. 2025)
+  \item Process outcome prediction (Teinemaa, Camargo, Van der Aalst)
+  \item Survival analysis for recurrent or multi-state events in healthcare
+  \item Hybrid PM–ML frameworks (Leemans, Mazhar, Weske)
+\end{itemize}
+
+% ============================================================
+\section{Conclusion}
+We proposed a process-aware predictive framework for early detection of Treatment-Resistant Depression, combining descriptive process mining with time-to-event modeling. By treating process features as dynamic covariates or embedding full event sequences into predictive architectures, we enable data-driven early-warning systems that bridge interpretability and accuracy. Future work includes multi-site validation, incorporation of psychotherapy and demographic covariates, and integration into clinical workflows for adaptive antidepressant management.
+
+\bibliographystyle{splncs04}
+\bibliography{refs}
 
 \end{document}
