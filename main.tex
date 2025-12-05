@@ -48,9 +48,9 @@ From a process-monitoring perspective, the central question is not only whether 
 
 % ============================================================
 \section{Proposed Model and Framework}
-We represent each patient as a sequence of antidepressant exposures over time, encoded as an event log $L = \{ \langle e_{1}, e_{2}, ..., e_{n} \rangle_i \}_{i=1}^{N}$, where each event $e_j = (a_j, t_j, c_j)$ comprises the activity (drug category), timestamp, and clinical context.
+We represent each \emph{case} as a time-ordered sequence of \emph{events}, encoded as an event log $L = \{ \langle e_{1}, e_{2}, ..., e_{n} \rangle_i \}_{i=1}^{N}$, where each event $e_j = (a_j, t_j, c_j)$ comprises the activity label $a_j$, timestamp $t_j$, and optional case- or event-level attributes $c_j$.
 
-The goal is to estimate the hazard $h_i(t)$ or probability $P(\text{TRD onset} | L_i^{\le t})$ given the partial history.
+The goal is to estimate, for each running case $i$, the hazard $h_i(t)$ or conditional probability $P(Y_i(t) = 1 \mid L_i^{\le t})$ that a specified outcome of interest $Y$ will occur, given the partial trace observed up to time $t$.
 
 Three complementary modeling options are considered.
 
@@ -59,29 +59,29 @@ Three complementary modeling options are considered.
 Process mining metrics (e.g., transition frequencies, pathway entropy, switch rates) are extracted within sliding time windows and used as time-varying covariates in a Cox or joint survival model.
 
 \begin{algorithm}[h]
-\caption{Process-Aware Dynamic Survival Modeling}
+\caption{Process-Aware Dynamic Survival Modeling for Event Logs}
 \begin{algorithmic}[1]
 \Require Event log $L$, time horizon $T$, window size $w$
-\For{each patient $i$}
+\For{each case $i$}
     \For{each time window $t=1,\ldots,T/w$}
         \State Extract process features $X_i(t)$ from events in $[t-w, t]$
         \State Update survival model: $h_i(t)=h_0(t)\exp(\beta^\top X_i(t))$
     \EndFor
 \EndFor
-\State Estimate TRD risk curves via partial likelihood or landmarking.
+\State Estimate outcome risk curves via partial likelihood or landmarking.
 \end{algorithmic}
 \end{algorithm}
 
 % ------------------------------------------------------------
 \subsection{Sequence-to-Outcome Deep Model}
-Learn representations directly from event sequences using RNNs or Transformers that embed both temporal and categorical event data. The model predicts survival probability or discrete-time risk.
+Learn representations directly from event sequences using RNNs or Transformers that embed both temporal and categorical event data. The model predicts survival probability or discrete-time risk for the outcome of interest.
 
 \begin{algorithm}[h]
 \caption{Sequence-to-Outcome Deep Learning}
 \begin{algorithmic}[1]
 \Require Tokenized event sequences $\{L_i\}$ with timestamps
 \State Embed events into vector space $(a_j, \Delta t_j)$
-\State Train model $f_\theta$ to output $P_\theta(\text{TRD at } t|L_i^{\le t})$
+\State Train model $f_\theta$ to output $P_\theta(Y_i(t)=1 \mid L_i^{\le t})$
 \State Loss = negative log partial likelihood or time-dependent cross-entropy
 \State Evaluate with C-index, time-dependent AUC
 \end{algorithmic}
@@ -89,7 +89,7 @@ Learn representations directly from event sequences using RNNs or Transformers t
 
 % ------------------------------------------------------------
 \subsection{Hybrid Process Clustering + Survival}
-Cluster early trajectories using process-mining similarity (e.g., trace distance, DFG embeddings). Fit separate survival models per cluster to quantify TRD risk conditional on pathway type.
+Cluster early trajectories using process-mining similarity (e.g., trace distance, DFG embeddings). Fit separate survival models per cluster to quantify outcome risk conditional on pathway type.
 
 \begin{algorithm}[h]
 \caption{Hybrid Process Clustering and Survival Modeling}
@@ -100,7 +100,7 @@ Cluster early trajectories using process-mining similarity (e.g., trace distance
 \For{each cluster $C_k$}
     \State Fit survival model: $h_k(t)=h_{0k}(t)\exp(\beta_k^\top X_i)$
 \EndFor
-\State Predict risk per patient by cluster membership.
+\State Predict risk per case by cluster membership.
 \end{algorithmic}
 \end{algorithm}
 
